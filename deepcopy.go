@@ -5,9 +5,9 @@ import (
 	"time"
 )
 
-func Clone(dst interface{}, original interface{}) {
-	origin := reflect.ValueOf(original).Elem()
-	clone := reflect.ValueOf(dst).Elem()
+func Clone(dstPtr interface{}, srcPtr interface{}) {
+	origin := reflect.ValueOf(srcPtr).Elem()
+	clone := reflect.ValueOf(dstPtr).Elem()
 	copy(origin, clone)
 
 	return
