@@ -2,9 +2,11 @@ package deepcopy
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/stretchr/testify/assert"
 	"math/rand"
 	"strconv"
+	"strings"
 	"testing"
 	"time"
 )
@@ -19,12 +21,32 @@ func TestCopy(t *testing.T) {
 
 	Clone(&c, &p)
 
+	t.Log(p)
+	t.Log(c)
+
 	pjb, err := json.Marshal(&p)
 	assert.Nil(t, err)
 	cjb, err := json.Marshal(&c)
 	assert.Nil(t, err)
 
-	assert.Equal(t, string(pjb), string(cjb))
+	pjbStr, cjbStr := string(pjb), string(cjb)
+	assert.Equal(t, pjbStr, cjbStr)
+
+	pRawStr, cRawStr := fmt.Sprintf("%v", p), fmt.Sprintf("%v", c)
+	splitedP, splitedC := strings.Split(pRawStr, " "), strings.Split(cRawStr, " ")
+	assert.Equal(t, len(splitedP), len(splitedC))
+
+	numFoundPtr := 0
+	for i := range splitedP {
+		if strings.HasPrefix(splitedP[i], "0x") || strings.HasPrefix(splitedP[i], "[0x") {
+			// point must not be same
+			assert.NotEqual(t, splitedP[i], splitedC[i])
+			numFoundPtr++
+		} else {
+			assert.Equal(t, splitedP[i], splitedC[i])
+		}
+	}
+	t.Log("NumPtr:", numFoundPtr)
 }
 
 type ComplicatedMan struct {
