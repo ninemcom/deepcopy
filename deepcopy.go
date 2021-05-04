@@ -14,7 +14,8 @@ func Clone(dstPtr interface{}, srcPtr interface{}) {
 }
 
 func copy(_origin, _clone reflect.Value) {
-	oq, cq := Values{}, Values{}
+	oq, cq := values{}, values{}
+
 	oq.Push(_origin)
 	cq.Push(_clone)
 
