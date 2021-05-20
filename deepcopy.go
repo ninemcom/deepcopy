@@ -5,23 +5,19 @@ import (
 	"time"
 )
 
-var cache = sizeCache{}
-
 func Clone(dstPtr interface{}, srcPtr interface{}) {
 	origin := reflect.ValueOf(srcPtr).Elem()
 	clone := reflect.ValueOf(dstPtr).Elem()
 
-	originTy := origin.Type().String()
-	allocSize := copy(origin, clone, cache.ObtainSize(originTy))
-	cache.Register(originTy, allocSize)
+	copy(origin, clone)
 
 	return
 }
 
-func copy(_origin, _clone reflect.Value, preAllocSize int) (allocatedSize int) {
+func copy(_origin, _clone reflect.Value) {
 	oq, cq := values{}, values{}
-	oq.Init(preAllocSize)
-	cq.Init(preAllocSize)
+	oq.Init(64)
+	cq.Init(64)
 
 	oq.Push(_origin)
 	cq.Push(_clone)
@@ -99,6 +95,4 @@ func copy(_origin, _clone reflect.Value, preAllocSize int) (allocatedSize int) {
 			c.Set(o)
 		}
 	}
-
-	return oq.Cap()
 }
